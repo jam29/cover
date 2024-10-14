@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'mavenj' // Your configured Maven installation
+        maven 'maven' // Your configured Maven installation
     }
 
     stages {
