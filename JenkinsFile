@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'Maven_3.x' // Nom de votre installation Maven configurée dans Jenkins
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://url_de_votre_repo.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('SonarQube analysis') {
+            steps {
+                withSonarQubeEnv('sonarq4j') { // Nom de la configuration SonarQube dans Jenkins
+                    sh 'mvn sonar:sonar'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh 'mvn spring-boot:run'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build et analyse SonarQube réussis !'
+        }
+        failure {
+            echo 'Le build ou l’analyse a échoué.'
+        }
+    }
+}
