@@ -2,26 +2,36 @@ pipeline {
     agent any
 
     tools {
-        maven 'mavenj' // Nom de votre installation Maven configurée dans Jenkins
+        maven 'mavenj' // Your configured Maven installation
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com.jam29/cover.git'
+                git branch: 'main', url: 'https://github.com/jam29/cover.git'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'mvn clean package'
+                sh 'mvn clean package' // or './mvnw clean package' if using Maven wrapper
             }
         }
 
         stage('SonarQube analysis') {
             steps {
-                withSonarQubeEnv('sonarq4j') { // Nom de la configuration SonarQube dans Jenkins
+                withSonarQubeEnv('sonarq4j') { // Your SonarQube configuration
                     sh 'mvn sonar:sonar'
+                }
+            }
+        }
+
+        stage('SonarQube Quality Gate') {
+            steps {
+                script {
+                    timeout(time: 1, unit: 'HOURS') {
+                        waitForQualityGate abortPipeline: true
+                    }
                 }
             }
         }
@@ -34,6 +44,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
+                // Adjust this to your deployment strategy
                 sh 'mvn spring-boot:run'
             }
         }
@@ -41,10 +52,10 @@ pipeline {
 
     post {
         success {
-            echo 'Build et analyse SonarQube réussis !'
+            echo 'Build and SonarQube analysis succeeded!'
         }
         failure {
-            echo 'Le build ou l’analyse a échoué.'
+            echo 'Build or analysis failed.'
         }
     }
 }
