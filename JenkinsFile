@@ -2,13 +2,13 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven_3.x' // Nom de votre installation Maven configurée dans Jenkins
+        maven 'mavenj' // Nom de votre installation Maven configurée dans Jenkins
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git 'https://url_de_votre_repo.git'
+                git 'https://github.com.jam29/cover.git'
             }
         }
 
